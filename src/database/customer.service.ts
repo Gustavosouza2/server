@@ -5,46 +5,46 @@ import { Customer, Prisma } from '@prisma/client';
 @Injectable()
 export class CustomerService {
   constructor(private prisma: PrismaService) {}
-
-  async customer(
-    customerWhereUniqueInput: Prisma.CustomerWhereUniqueInput,
-  ): Promise<Customer | null> {
-    return this.prisma.customer.findUnique({
-      where: customerWhereUniqueInput,
-    });
-  }
-  async customers() {
+  async customers(): Promise<Customer[]> {
     return this.prisma.customer.findMany();
   }
-  async filteredCustomers(searchString: string) {
-    return this.prisma.customer.findMany({
+  async findCustomerById(id: string): Promise<Customer> {
+    return await this.prisma.customer.findUnique({
       where: {
-        OR: [
-          {
-            name: { contains: searchString, mode: 'insensitive' },
-          },
-          {
-            email: { contains: searchString, mode: 'insensitive' },
-          },
-        ],
+        id: id,
       },
     });
   }
 
+  async findCustomerByName(nameToBeMatched: string): Promise<Customer[]> {
+    return nameToBeMatched
+      ? this.prisma.customer.findMany({
+          where: {
+            name: {
+              contains: nameToBeMatched,
+              mode: 'insensitive',
+            },
+          },
+        })
+      : this.prisma.customer.findMany();
+  }
+
   async createCustomer(data: Prisma.CustomerCreateInput): Promise<Customer> {
-    return this.prisma.customer.create({
+    return await this.prisma.customer.create({
       data,
     });
   }
 
-  async updateCustomer(params: {
-    where: Prisma.CustomerWhereUniqueInput;
-    data: Prisma.CustomerUpdateInput;
-  }): Promise<Customer> {
-    const { where, data } = params;
+  async updateCustomer(id: string, data: Customer): Promise<Customer> {
     return this.prisma.customer.update({
+      where: { id },
       data,
-      where,
+    });
+  }
+  async patchCustomer(id: string, data: Partial<Customer>): Promise<Customer> {
+    return this.prisma.customer.update({
+      where: { id },
+      data,
     });
   }
 
