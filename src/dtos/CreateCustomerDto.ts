@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, Length } from 'class-validator';
 
-export class CreateCustomerRequestBody {
+export class CreateCustomerDto {
   @IsNotEmpty()
   id: string;
 
@@ -15,4 +15,10 @@ export class CreateCustomerRequestBody {
 
   @IsNotEmpty()
   amount: number;
+
+  @IsOptional()
+  created_at: string;
+
+  @IsOptional()
+  updated_at: string;
 }
